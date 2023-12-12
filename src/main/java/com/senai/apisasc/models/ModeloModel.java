@@ -23,7 +23,7 @@ public class ModeloModel implements Serializable {
     private UUID id;
 
     private String modelo;
-    private BigDecimal consumoNominal;
+    private BigDecimal consumo_nominal;
 
     @ManyToOne
     @JoinColumn(name = "id_fabricante", referencedColumnName = "id")

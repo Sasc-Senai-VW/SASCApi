@@ -10,7 +10,7 @@ public record ModeloDto(
 
 
         @NotBlank String modelo,
-        @NotBlank BigDecimal consumoNominal,
+        @NotNull BigDecimal consumo_nominal,
 
         @NotNull UUID id_fabricante,
         @NotNull UUID id_tipoequipamento
