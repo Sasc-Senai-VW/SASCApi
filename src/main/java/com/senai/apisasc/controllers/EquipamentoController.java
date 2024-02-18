@@ -6,6 +6,8 @@ import com.senai.apisasc.models.EquipamentoModel;
 import com.senai.apisasc.repositories.EquipamentoRepository;
 import com.senai.apisasc.repositories.ModeloRepository;
 import com.senai.apisasc.repositories.SetorRepository;
+import com.senai.apisasc.services.EquipamentoService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,13 @@ public class EquipamentoController {
 
     @Autowired
     ModeloRepository modeloRepository;
+
+    @Autowired
+    EquipamentoService equipamentoService;
+
+    public EquipamentoController(EquipamentoService equipamentoService) {
+        this.equipamentoService = equipamentoService;
+    }
 
     @GetMapping
     public ResponseEntity<List<EquipamentoModel>> listarEquipamentos() {
@@ -102,12 +111,29 @@ public class EquipamentoController {
     public ResponseEntity<Object> deleterEquipamento(@PathVariable(value = "idEquipamento") UUID id) {
         Optional<EquipamentoModel> equipamentoBuscado = equipamentoRepository.findById(id);
 
-        if (equipamentoBuscado.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Equipamento nao encotrado");
+
+
+        try {
+            equipamentoService.deleteEquipamentoAndRelatedData(equipamentoBuscado.get().getId());
+
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Equipamento deletado com sucesso");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao deletar equipamento");
         }
 
-        equipamentoRepository.delete(equipamentoBuscado.get());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Equipamento deletado com sucesso");
+
     }
+//    public ResponseEntity<Object> deleteEquipamento(@PathVariable(value = "idEquipamento") UUID id) {
+//        try {
+//            equipamentoService.deleteEquipamentoAndRelatedData(id);
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Equipamento deletado com sucesso");
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Equipamento não encontrado");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao deletar equipamento");
+//        }
+//    }
+
+
 }
